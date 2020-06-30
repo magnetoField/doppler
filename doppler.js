@@ -4,7 +4,9 @@ let doplColor;
 let mojaLinia=[];
 let sredniaLina=[];
 let okres=0;
-let period=400;
+let period=30;
+let czestotliwosc=[0];
+let counter=0;
 
 function simpleMovingAVG(dataObjArray, timePeriods){
 let sum = 0;
@@ -40,6 +42,8 @@ function draw() {
   background('brown');
   let slidVal = slider.value();
   let t = frameCount / 60; // update time
+  let szczyt1=0;
+  let szczyt2=0;
 
   // create a random number of snowflakes each frame
   //for (let i = 0; i < 1; i++) {
@@ -54,11 +58,33 @@ function draw() {
   for (let sa=0; sa< width; sa++) {
       doplColor=get(sa+width/2-2,height/2);
       mojaLinia[sa]=doplColor[0]+doplColor[1]+doplColor[2];
-      if (sa>period){
-        sredniaLina[sa]=simpleMovingAVG(mojaLinia.slice(sa-period,sa),period);
-        mojaLinia[sa]=sredniaLina[sa];
+      //  if (sa>period){
+      //  sredniaLina[sa]=simpleMovingAVG(mojaLinia.slice(sa-period,sa),period);
+      //  mojaLinia[sa]=sredniaLina[sa];
+      //}
+      if ((mojaLinia[sa]>300) && (szczyt1==0)){
+        szczyt1=sa;
+      } else if (mojaLinia[sa]>300 && szczyt1>0) {
+        czestotliwosc[counter]=100/(sa-szczyt1);
+        szczyt1=0;
+        counter+=1;
+        if (counter>period+30) {
+          for (let licznik of czestotliwosc){
+          czestotliwosc[licznik+period]= simpleMovingAVG(czestotliwosc.slice(licznik,licznik+period),period)
+          }
+
+        }
+
+        if (counter>width){
+          counter=0;
+        }
       }
+    //  } else {
+    //    czestotliwosc[sa+1]= czestotliwosc[sa];
+    //  }
+
       //print(mojaLinia[sa]);
+      //print(czestotliwosc);
   }
 
   translate(width / 2, height / 2);
@@ -69,7 +95,7 @@ function draw() {
 
   for (let x=period; x < mojaLinia.length; x++) {
 
-    line(x-width,0,x-width,((mojaLinia[x]-250))*(-1.5));
+    line(x-width-1,-czestotliwosc[x-1],x-width,-czestotliwosc[x]);
   };
 
   // line(frameCount-width/2,height,frameCount-width/2,doplColor[0]);
