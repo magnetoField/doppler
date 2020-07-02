@@ -7,6 +7,8 @@ let okres=0;
 let period=2;
 let czestotliwosc=[0];
 let counter=0;
+let szczyt1=0;
+let szczyt2=0;
 
 function simpleMovingAVG(dataObjArray, timePeriods){
 let sum = 0;
@@ -42,8 +44,8 @@ function draw() {
   background('black');
   let slidVal = slider.value();
   let t = frameCount / 60; // update time
-  let szczyt1=0;
-  let szczyt2=0;
+
+
 
   // create a random number of snowflakes each frame
   //for (let i = 0; i < 1; i++) {
@@ -55,26 +57,27 @@ function draw() {
     flake.update(t); // update snowflake position
     flake.display(); // draw snowflake
   }
-  for (let sa=0; sa< width; sa++) {
-      doplColor=get(mouseX-35+sa,mouseY-35+sa);
+  //for (let sa=0; sa< width; sa++) {
+      doplColor=get(3*width/4,3*height/4);
       ellipse(mouseX,mouseY,10);
-      mojaLinia[sa]=doplColor[0]+doplColor[1]+doplColor[2];
+      mojaLinia[frameCount%width]=doplColor[0]+doplColor[1]+doplColor[2];
       //  if (sa>period){
       //  sredniaLina[sa]=simpleMovingAVG(mojaLinia.slice(sa-period,sa),period);
       //  mojaLinia[sa]=sredniaLina[sa];
       //}
-      if ((mojaLinia[sa]>200) && (szczyt1==0)){
-        szczyt1=sa;
-      } else if (mojaLinia[sa]>200 && szczyt1>0) {
-        czestotliwosc[counter]=100/(sa-szczyt1);
+      if ((mojaLinia[frameCount%width]==0) && (szczyt1==0)){
+        szczyt2+=1;
+      } else if (mojaLinia[frameCount%width]>0 && szczyt2>0) {
+        czestotliwosc[counter]=100/(szczyt2);
         szczyt1=0;
+        szczyt2=0;
         counter+=1;
-        if (counter>period) {
-          for (let licznik=period; licznik<czestotliwosc.length ; licznik++) {
-          czestotliwosc[licznik-period]= simpleMovingAVG(czestotliwosc.slice(licznik-period,licznik),period);
-          }
+        //if (counter>period) {
+        //  for (let licznik=period; licznik<czestotliwosc.length ; licznik++) {
+        //  czestotliwosc[licznik-period]= simpleMovingAVG(czestotliwosc.slice(licznik-period,licznik),period);
+        //  }
 
-        }
+        //}
         //czestotliwosc[counter]=czestotliwosc[counter]*2
         if (counter>width){
           counter=0;
@@ -86,7 +89,7 @@ function draw() {
 
       //print(mojaLinia[sa]);
       //print(czestotliwosc);
-  }
+  //}
 
   translate(width / 2, height / 2);
 
@@ -94,9 +97,9 @@ function draw() {
   //sredniaLina=simpleMovingAVG(mojaLinia,20);
   //print(doplColor);
 
-  for (let x=0; x < czestotliwosc.length-period; x++) {
+  for (let x=1; x < czestotliwosc.length-period; x++) {
     strokeWeight(5);
-    line(x-width-1,-czestotliwosc[x-1],x-width,-czestotliwosc[x]);
+    line((x-1)*30-width/2,-czestotliwosc[x-1],x*30-width/2,-czestotliwosc[x]);
     strokeWeight(1);
   };
 
