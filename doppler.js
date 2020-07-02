@@ -4,7 +4,7 @@ let doplColor;
 let mojaLinia=[];
 let sredniaLina=[];
 let okres=0;
-let period=30;
+let period=2;
 let czestotliwosc=[0];
 let counter=0;
 
@@ -39,7 +39,7 @@ function setup() {
 }
 
 function draw() {
-  background('brown');
+  background('black');
   let slidVal = slider.value();
   let t = frameCount / 60; // update time
   let szczyt1=0;
@@ -56,25 +56,26 @@ function draw() {
     flake.display(); // draw snowflake
   }
   for (let sa=0; sa< width; sa++) {
-      doplColor=get(sa+width/2-2,height/2);
+      doplColor=get(mouseX-35+sa,mouseY-35+sa);
+      ellipse(mouseX,mouseY,10);
       mojaLinia[sa]=doplColor[0]+doplColor[1]+doplColor[2];
       //  if (sa>period){
       //  sredniaLina[sa]=simpleMovingAVG(mojaLinia.slice(sa-period,sa),period);
       //  mojaLinia[sa]=sredniaLina[sa];
       //}
-      if ((mojaLinia[sa]>300) && (szczyt1==0)){
+      if ((mojaLinia[sa]>200) && (szczyt1==0)){
         szczyt1=sa;
-      } else if (mojaLinia[sa]>300 && szczyt1>0) {
+      } else if (mojaLinia[sa]>200 && szczyt1>0) {
         czestotliwosc[counter]=100/(sa-szczyt1);
         szczyt1=0;
         counter+=1;
-        if (counter>period+30) {
-          for (let licznik of czestotliwosc){
-          czestotliwosc[licznik+period]= simpleMovingAVG(czestotliwosc.slice(licznik,licznik+period),period)
+        if (counter>period) {
+          for (let licznik=period; licznik<czestotliwosc.length ; licznik++) {
+          czestotliwosc[licznik-period]= simpleMovingAVG(czestotliwosc.slice(licznik-period,licznik),period);
           }
 
         }
-
+        //czestotliwosc[counter]=czestotliwosc[counter]*2
         if (counter>width){
           counter=0;
         }
@@ -93,9 +94,10 @@ function draw() {
   //sredniaLina=simpleMovingAVG(mojaLinia,20);
   //print(doplColor);
 
-  for (let x=period; x < mojaLinia.length; x++) {
-
+  for (let x=0; x < czestotliwosc.length-period; x++) {
+    strokeWeight(5);
     line(x-width-1,-czestotliwosc[x-1],x-width,-czestotliwosc[x]);
+    strokeWeight(1);
   };
 
   // line(frameCount-width/2,height,frameCount-width/2,doplColor[0]);
